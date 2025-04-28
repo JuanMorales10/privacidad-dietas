@@ -1,0 +1,139 @@
+openapi: 3.1.0
+info:
+  title: Generador Dinámico de Dietas Personalizadas
+  description: API ultra dinámica para hacer preguntas adaptativas y crear una dieta 100% personalizada basada en los datos del usuario.
+  version: 1.1.0
+servers:
+  - url: https://juanmorales10.github.io/privacidad-dietas
+    description: API publicada en GitHub Pages
+paths:
+  /inicio:
+    get:
+      operationId: iniciarSesionDietas
+      summary: Iniciar sesión de personalización
+      description: Inicia la sesión para la creación de una dieta personalizada.
+      responses:
+        '200':
+          description: Sesión iniciada exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sessionId:
+                    type: string
+                    description: ID de la sesión para seguir el flujo de preguntas y respuestas
+
+  /preguntaSiguiente:
+    post:
+      operationId: obtenerPreguntaSiguiente
+      summary: Obtener siguiente pregunta
+      description: Devuelve la próxima pregunta relevante según las respuestas anteriores.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sessionId:
+                  type: string
+                respuestasPrevias:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      idPregunta:
+                        type: string
+                      respuesta:
+                        type: string
+      responses:
+        '200':
+          description: Próxima pregunta generada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  preguntaDisponible:
+                    type: boolean
+                  pregunta:
+                    type: string
+                  idPregunta:
+                    type: string
+                  opciones:
+                    type: array
+                    items:
+                      type: string
+                    description: Opciones sugeridas para respuestas (opcional)
+                  finalizar:
+                    type: boolean
+
+  /responder:
+    post:
+      operationId: enviarRespuesta
+      summary: Enviar respuesta a una pregunta
+      description: Envía una respuesta y recibe la siguiente pregunta si corresponde.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sessionId:
+                  type: string
+                idPregunta:
+                  type: string
+                respuesta:
+                  type: string
+      responses:
+        '200':
+          description: Resultado después de responder
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  preguntaDisponible:
+                    type: boolean
+                  pregunta:
+                    type: string
+                  idPregunta:
+                    type: string
+                  opciones:
+                    type: array
+                    items:
+                      type: string
+                  finalizar:
+                    type: boolean
+
+  /generarDieta:
+    post:
+      operationId: generarDietaPersonalizada
+      summary: Generar dieta personalizada
+      description: Genera una dieta basada en todas las respuestas recopiladas en la sesión.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                sessionId:
+                  type: string
+      responses:
+        '200':
+          description: Dieta personalizada generada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dieta:
+                    type: string
+                  recomendaciones:
+                    type: array
+                    items:
+                      type: string
+                    description: Consejos adicionales personalizados
